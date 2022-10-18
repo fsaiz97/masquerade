@@ -75,6 +75,44 @@ function addRoutes(app) {
             res.status(404).send({err: err})
         }
     })
+
+    // Post a new entity
+    app.post("/wizard", async (req, res) => {
+        // req.body = { name, age, power, location_id, weapon }
+        try {
+            const name = req.body.name;
+            const age = parseInt(req.body.age);
+            const power = req.body.power;
+            const location_id = parseInt(req.body.location_id);
+            const weapon = req.body.weapon;
+
+            const logIncident = await db.query(
+                `INSERT INTO wizard (name, age, power, location_id, weapon)
+                VALUES ($1, $2, $3, $4, $5)`, [name, age, power, location_id, weapon])
+            
+            res.status(200).send(`Wizard ${name} created`);
+            
+        } catch (err) {
+            res.status(400).send({err: err})
+        }
+    });
+
+    // Post a new location
+
+    // Log an incident with a specific time, severity level, and description
+    app.post("/incident-log", async (req, res) => {
+        // req.body = { time, severity_level, description }
+
+        try {
+            const logIncident = await db.query(
+                `INSERT INTO incident (time, severity_level, description)
+                VALUES ($1, $2, $3)`, [time, severity_level, description]
+                )
+
+        } catch (err) {
+            res.status(400).send({err:err});
+        }
+    });
     
 }
 
