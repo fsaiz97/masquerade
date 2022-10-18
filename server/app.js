@@ -98,16 +98,39 @@ function addRoutes(app) {
     });
 
     // Post a new location
+    app.post("/location", async (req, res) => {
+        // req.body = { world, setting }
+        try {
+            const { world, setting } = req.body;
+
+            const logIncident = await db.query(
+                `INSERT INTO location (world, setting)
+                VALUES ($1, $2)`, [world, setting])
+            
+            res.status(200).send(`Location ${world} created`);
+            
+        } catch (err) {
+            res.status(400).send({err: err})
+        }
+    });
 
     // Log an incident with a specific time, severity level, and description
     app.post("/incident-log", async (req, res) => {
         // req.body = { time, severity_level, description }
 
+        const time = req.body.time;
+        const severity_level = req.body.severity_level;
+        const description = req.body.description;
+        const location_id = parseInt(req.body.location_id);
+        const wizard_id = parseInt(req.body.wizard_id);
+
         try {
             const logIncident = await db.query(
-                `INSERT INTO incident (time, severity_level, description)
-                VALUES ($1, $2, $3)`, [time, severity_level, description]
+                `INSERT INTO incident (wizard_id, location_id, time, description, severity_level)
+                VALUES ($1, $2, $3, $4, $5)`, [wizard_id, location_id, time, description, severity_level]
                 )
+
+            res.status(200).send(`Incident ${description} was created.`);
 
         } catch (err) {
             res.status(400).send({err:err});
